@@ -1,5 +1,5 @@
-#ifndef RayIntersectableCircle_h
-#define RayIntersectableCircle_h
+#ifndef RayIntersectableEllipse_h
+#define RayIntersectableEllipse_h
 
 #include <cmath>
 
@@ -19,7 +19,7 @@
  * This class is a model of point functor and of ray intersectable shape
  */
 template <typename TPoint, typename TParameter = long long int>
-class RayIntersectableCircle 
+class RayIntersectableEllipse 
 {
   public: 
     /////////////////////// inner types /////////////////
@@ -37,14 +37,14 @@ class RayIntersectableCircle
      * The center is equal to ( -a/(2c) , -b/(2c) ) and the 
      * radius is equal to sqrt( (a^2 + b^2 - 4cd) / 4c^2 )
      */
-    Integer myA, myB, myC, myD;  
+    Integer myA, myB, myC, myD, myE, myF;  
 
   public:
     ///////////////////// standard services /////////////
     /**
      * Default constructor
      */
-    RayIntersectableCircle(): myA(0), myB(0), myC(0), myD(0) {}
+    RayIntersectableEllipse(): myA(0), myB(0), myC(0), myD(0), myE(0), myF(0) {}
 
     /**
      * Standard constructor
@@ -53,45 +53,24 @@ class RayIntersectableCircle
      * @param c c-parameter
      * @param d d-parameter
      */
-    RayIntersectableCircle(const Integer& a, const Integer& b, const Integer& c, const Integer& d)
-      : myA(a), myB(b), myC(c), myD(d) {}
+    RayIntersectableEllipse(const Integer& a, const Integer& b, const Integer& c, 
+      const Integer& d, const Integer& e, const Integer& f)
+      : myA(a), myB(b), myC(c), myD(d), myE(e), myF(f) {}
 
-    /**
-     * Constructor from three points
-     * @param aP first point
-     * @param aQ second point
-     * @param aR third point
-     */
-    RayIntersectableCircle(const Point& aP, const Point& aQ, const Point& aR)
-    {
-      Integer px = aP[0]; 
-      Integer qx = aQ[0]; 
-      Integer rx = aR[0];
-      Integer py = aP[1]; 
-      Integer qy = aQ[1]; 
-      Integer ry = aR[1];
-      Integer pz = px*px + py*py; 
-      Integer qz = qx*qx + qy*qy; 
-      Integer rz = rx*rx + ry*ry; 
-
-      myA = - py*(qz - rz) + qy*(pz - rz) - ry*(pz - qz); 
-      myB = px*(qz - rz) - qx*(pz - rz) + rx*(pz - qz);
-      myC = - px*(qy - ry) + qx*(py - ry) - rx*(py - qy); 
-      myD = px*(qy*rz - ry*qz) - qx*(py*rz - ry*pz) + rx*(py*qz - qy*pz); 
-    }
 
     /**
      * Copy constructor
      * @param p other object to copy
      */
-    RayIntersectableCircle(const RayIntersectableCircle& p): myA(p.a()), myB(p.b()), myC(p.c()), myD(p.d()) {}
+    RayIntersectableEllipse(const RayIntersectableEllipse& p): 
+      myA(p.a()), myB(p.b()), myC(p.c()), myD(p.d()), myE(p.e()), myF(p.f()) {}
 
     /**
      * Assignement operator
      * @param p other object to copy
      * @return reference on *this
      */
-    RayIntersectableCircle& operator=(const RayIntersectableCircle& p) 
+    RayIntersectableEllipse& operator=(const RayIntersectableEllipse& p) 
     {
       if (p != *this)
       {
@@ -99,6 +78,8 @@ class RayIntersectableCircle
         myB = p.b(); 
         myC = p.c(); 
         myD = p.d();
+        myE = p.e();
+        myF = p.f();        
       }
       return *this; 
     }
@@ -106,7 +87,7 @@ class RayIntersectableCircle
     /**
      * Default destructor
      */
-    ~RayIntersectableCircle() {}
+    ~RayIntersectableEllipse() {}
 
     ///////////////////// read access ///////////////////
     /**
@@ -134,49 +115,18 @@ class RayIntersectableCircle
     Integer d() const { return myD; }
 
     /**
-     * radius accessor
-     * @return circle radius, ie. sqrt( (a^2 + b^2 - 4cd) / 4c^2 ). 
+     * e-parameter accessor
+     * @return e-parameter. 
      */
-    double getRadius() const 
-    { 
-      double den = DGtal::NumberTraits<Integer>::castToDouble(4*myC*myC);
-      double v1 = DGtal::NumberTraits<Integer>::castToDouble(myA*myA) / den;
-      double v2 = DGtal::NumberTraits<Integer>::castToDouble(myB*myB) / den; 
-      double v3 = DGtal::NumberTraits<Integer>::castToDouble(myD)
-        / DGtal::NumberTraits<Integer>::castToDouble(myC); 
-      return std::sqrt(v1 + v2 - v3); 
-    }
+    Integer e() const { return myE; }
 
     /**
-     * center x-coordinate accessor
-     * @return x-coordinate of the circle center. 
+     * f-parameter accessor
+     * @return f-parameter. 
      */
-    double getCenterX() const 
-    { 
-      return DGtal::NumberTraits<Integer>::castToDouble(-myA) 
-        / DGtal::NumberTraits<Integer>::castToDouble(2*myC);  
-    }
+    Integer f() const { return myF; }
 
-    /**
-     * center y-coordinate accessor
-     * @return y-coordinate of the circle center. 
-     */
-    double getCenterY() const 
-    { 
-      return DGtal::NumberTraits<Integer>::castToDouble(-myB)
-        / DGtal::NumberTraits<Integer>::castToDouble(2*myC);
-    }
 
-    /**
-     * Returns the minimal y-coordinate of the digital points
-     * lying inside the circle.
-     * @return minimal y-coordinate. 
-     */
-    Coordinate getBottom() const 
-    { 
-      double y = getCenterY() - getRadius(); 
-      return (Coordinate) std::ceil( y ); 
-    }
 
 
   public: 
@@ -184,7 +134,7 @@ class RayIntersectableCircle
     /**
      * Function operator
      * @param aPoint any point
-     * @return 0 if @a aPoint is on the circle,
+     * @return 0 if @a aPoint is on the ellipse,
      * a value <0 if @a aPoint is outside
      * a value >0 if @a aPoint is inside
      */
@@ -192,8 +142,11 @@ class RayIntersectableCircle
     {
       Integer x = aPoint[0]; 
       Integer y = aPoint[1];
-      Integer z = x*x + y*y;  
-      return (myA*aPoint[0] + myB*aPoint[1] + myC*z + myD); 
+      Integer xy = x*y;
+      Integer xx = x*x;
+      Integer yy = y*y;
+
+      return (myA*xx + myB*xy + myC*yy + myD*x + myE*y + myF); 
     }
 
   private:
@@ -269,7 +222,7 @@ class RayIntersectableCircle
         Coordinate& aQuotient, Point& aClosest) const 
     {
 
-      //We look for the intersection between  aS + aQ * aD and the circle
+//We look for the intersection between  aS + aQ * aD and the ellipse
       Integer aD0 = aDirection[0];
       Integer aD1 = aDirection[1];
 
@@ -277,9 +230,9 @@ class RayIntersectableCircle
       Integer aS1 = aStartingPoint[1];    
 
 
-      Integer aEq = myC*(aD0*aD0 + aD1*aD1);
-      Integer bEq = myA*aD0 + myB*aD1 + 2*myC*aS0*aD0 + 2*myC*aS1*aD1;
-      Integer cEq = myA*aS0 + myB*aS1 + myC*aS0*aS0 + myC*aS1*aS1 + myD;  
+      Integer aEq = myA*aD0*aD0 + myB*aD0*aD1 + myC*aD1*aD1;
+      Integer bEq = 2*myA*aS0*aD0 + myB*(aS0*aD1 + aS1*aD0) + 2*myC*aS1*aD1 + myD*aD0 + myE*aD1;
+      Integer cEq = myA*aS0*aS0 + myB*aS0*aS1 + myC*aS1*aS1 + myD*aS0 + myE*aS1 + myF;
 
       Integer Delta = bEq*bEq - 4*aEq*cEq;
 
@@ -350,12 +303,21 @@ class RayIntersectableCircle
           { // aS is strictly inside the circle
             // We pick the positive solution by dichotomic search
             //this predicate is true iff the input value is >= 0
-            using namespace DGtal;
+            /*using namespace DGtal;
             Thresholder<Integer, false, true> predicate(0); 
             //a trivial upper bound is the circle diameter
             Coordinate diameter = 2 * (Coordinate) std::ceil( getRadius() ) + 1; 
             aQuotient = dichotomicSearch(aStartingPoint, aDirection, diameter, predicate); 
+            aClosest = aStartingPoint + aQuotient*aDirection;*/
+            
+            aQuotient = 0;
+            while ((*this)(aStartingPoint + aQuotient*aDirection) > 0)
+            {
+              aQuotient++;
+            }
+            aQuotient--; 
             aClosest = aStartingPoint + aQuotient*aDirection;
+            
             return true;
           }
         }
@@ -373,37 +335,7 @@ class RayIntersectableCircle
      */
     Point getConvexHullVertex() const 
     { 
-      //computation of one integer point, 
-      //inside the circle and having min y-coordinate
-      Point startingPoint; 
-
-      Coordinate ymin = getBottom();
-      Coordinate x = (Coordinate) DGtal::NumberTraits<Integer>::castToInt64_t(-myA/(2*myC)); 
-      Point ptf(x, ymin);
-      if ( this->operator()( ptf ) < 0 )
-      { //if ptf is outside the circle
-        Point ptc( (x+1), ymin ); 
-        if ( this->operator()( ptc ) < 0 )
-        { //if ptc is outside the circle
-          Point pt( x, (ymin+1) );
-          startingPoint = pt; 
-        }
-        else
-          startingPoint = ptc; 
-      }
-      else 
-        startingPoint = ptf; 
-
-      //ray casting
-      Coordinate q = 0;  
-      Point ptRes(0,0); 
-      if ( dray(startingPoint, Vector(1,0), q, ptRes) )
-        return ptRes; 
-      else 
-      {
-        ASSERT( false && "Error in getConvexHullVertex of RayIntersectableCircle" ); 
-        return Point(0,0); 
-      } 
+      return(Point(0,0));
     }
 
 }; 

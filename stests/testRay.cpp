@@ -5,6 +5,7 @@
 // Straight-line and circle
 #include "../inc/RayIntersectableStraightLine.h"
 #include "../inc/RayIntersectableCircle.h"
+#include "../inc/RayIntersectableEllipse.h"
 
 int main() 
 {
@@ -252,7 +253,21 @@ int main()
     nb++; 
     std::cout << "(" << nbok << " tests passed / " << nb << " tests)" << std::endl;
   }
+  std::cout << "testRayIntersectableEllipse" << std::endl; 
+  {
+    typedef RayIntersectableEllipse<Point> Ellipse; 
+    
+    Ellipse ellipse(2, -6, 5, 0, 2, 0);
+    
+    {Point P(0,0);
+    std::cout << P<< ": "<<ellipse(P) <<std::endl;}
 
+    {Point P(-1,-1);
+    std::cout << P<< ": "<<ellipse(P) <<std::endl;}
+    
+    {Point P(-3,-2);
+    std::cout << P<< ": "<<ellipse(P) <<std::endl;}
+  }
   //1 if at least one test failed
   //0 otherwise
   return (nb != nbok); 
